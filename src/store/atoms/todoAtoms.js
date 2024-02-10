@@ -5,7 +5,7 @@ export const todosAtomFamily = atomFamily({
     default: selectorFamily({
         key: "todosSelectorFamily",
         get: ()=> async()=>{
-          const res = await axios.get("http://localhost:3000/api/v1/allTodos");
+          const res = await axios.get("http://192.168.29.216:3000/api/v1/allTodos");
           return res.data.todos;
         }
     })

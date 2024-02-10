@@ -27,13 +27,13 @@ function TodoSingle({ todo }) {
   );
 
   async function deleteTodo(id) {
-    await axios.delete(`http://localhost:3000/api/v1/deleteTodo?id=${id}`);
+    await axios.delete(`http://192.168.29.216:3000/api/v1/deleteTodo?id=${id}`);
     setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
   }
 
   async function updateTodo(toUpdateTodo) {
     const res = await axios.put(
-      "http://localhost:3000/api/v1/updateTodo",
+      "http://192.168.29.216:3000/api/v1/updateTodo",
       toUpdateTodo
     );
     console.log("Res from todo api: ", res.data);
@@ -46,7 +46,7 @@ function TodoSingle({ todo }) {
 
   async function linkCategory(categoryId, todoId) {
     const res = await axios.put(
-      `http://localhost:3000/api/v1/category/linkTodo?catId=${categoryId}&todoId=${todoId}`
+      `http://192.168.29.216:3000/api/v1/category/linkTodo?catId=${categoryId}&todoId=${todoId}`
     );
     console.log("Res from link cat api: ", res.data.category);
     setTodoCategories((prevCat) =>
@@ -58,7 +58,7 @@ function TodoSingle({ todo }) {
   }
   async function unlinkCategory(categoryId, todoId) {
     const res = await axios.put(
-      `http://localhost:3000/api/v1/category/unlinkTodo?catId=${categoryId}&todoId=${todoId}`
+      `http://192.168.29.216:3000/api/v1/category/unlinkTodo?catId=${categoryId}&todoId=${todoId}`
     );
     console.log("Res from unlink cat api: ", res.data.category);
     setTodoCategories((prevCat) =>

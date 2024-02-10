@@ -11,10 +11,10 @@ const handleCreateTodo=async()=>{
         title: title,
         description: description,
         isCompleted: false,
-        createdAt: new Date().toLocaleTimeString(),
-        dueAt: new Date().toLocaleTimeString()
+        createdAt: new Date().toLocaleString(),
+        dueAt: new Date().toLocaleString()
     }
-   const res = await axios.post("http://localhost:3000/api/v1/createTodo", newTodo)
+   const res = await axios.post("http://192.168.29.216:3000/api/v1/createTodo", newTodo)
    setTodos((previousTodos)=>[...previousTodos, res.data.todo]);
    setShowModal(false)
 }

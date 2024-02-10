@@ -9,7 +9,7 @@ const setCategories = useSetRecoilState(categoryAtomFamily())
         const category = {
             name: catName
         }
-        const cat = await axios.post('http://localhost:3000/api/v1/category/createCategory', category);
+        const cat = await axios.post('http://192.168.29.216:3000/api/v1/category/createCategory', category);
         setCategories((prevCats)=>[...prevCats, cat.data.category]);
         console.log(cat.data.category)
         setShowCatModal(false);
