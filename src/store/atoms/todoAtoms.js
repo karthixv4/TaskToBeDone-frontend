@@ -32,3 +32,8 @@ export const filteredAtomsByCat = selector({
     }
   }
 })
+
+export const showAddTodoModalAtom = atom({
+  key: 'showAddTodoModalAtom',
+  default: false
+})

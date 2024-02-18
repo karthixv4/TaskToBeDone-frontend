@@ -45,26 +45,31 @@ function Category() {
   }
   return (
     <>
-      <div className="flex justify-start space-x-5">
-        <h1 onClick={resetCatState}>All todos</h1>
+    <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 w-full">
+      <ul className="flex justify-start space-x-5 overflow-x-auto">
+        <li className="flex flex-row items-center cursor-pointer">
+          <h1 onClick={() => setSelectedCat({ cat: 'AllTodos', _id: 'allTodos' })} className={`inline-block py-5 px-1 ${selectedCat._id === 'allTodos' ? 'text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500' : 'border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'}`}
+              aria-current={selectedCat._id === 'allTodos' ? 'page' : undefined}>All todos</h1>
+        </li>
         {getCategories.map((category) => (
-          <div key={category._id}>
+          <div key={category._id} >
+          <li className="flex flex-row items-center">
             <button
               onClick={() => setSelectedCat(category)}
-              key={category._id}
-              className="text-green-500"
+              className={`inline-block py-5 px-1  ${selectedCat._id === category._id ? 'cursor-pointer text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500' : 'border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'}`}
+              aria-current={selectedCat._id === category._id ? 'page' : undefined}
             >
               {category.name}
             </button>
             {/* svg for delete */}
-            <div onClick={() => deleteCategories(category)}>
+            <div onClick={() => deleteCategories(category)} className="ml-2 cursor-pointer">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-6 h-6"
+                className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-red-500"
               >
                 <path
                   strokeLinecap="round"
@@ -73,9 +78,12 @@ function Category() {
                 />
               </svg>
             </div>
-          </div>
+          </li>
+        </div>
+        
         ))}
-      </div>
+      </ul>
+    </div>
     </>
   );
 }

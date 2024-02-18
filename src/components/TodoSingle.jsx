@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import { todosAtomFamily } from "../store/atoms/todoAtoms";
 import { categoryAtomFamily } from "../store/atoms/categoryAtoms";
+import { Unlink, Check } from "lucide-react";
 function TodoSingle({ todo }) {
   //useState Stuffs
   const { title, description, isCompleted, createdAt } = todo;
@@ -25,6 +26,7 @@ function TodoSingle({ todo }) {
   const [getTodoCategories, setTodoCategories] = useRecoilState(
     categoryAtomFamily()
   );
+  // console.log("tdodo: ",todo)
 
   async function deleteTodo(id) {
     await axios.delete(`http://192.168.29.216:3000/api/v1/deleteTodo?id=${id}`);
@@ -68,9 +70,6 @@ function TodoSingle({ todo }) {
     );
   }
 
-  const handleEditTitle = () => {
-    setIsTitleEditable(true);
-  };
 
   const handleEditDesc = () => {
     setIsDescEditable(true);
@@ -101,7 +100,7 @@ function TodoSingle({ todo }) {
     const newTodo = {
       ...todo,
       createdAt: new Date().toLocaleString(),
-      isCompleted: editedCompleted,
+      isCompleted: !editedCompleted,
     };
 
     updateTodo(newTodo);
@@ -132,60 +131,85 @@ function TodoSingle({ todo }) {
     updateTodo(newTodo);
   }
 
-  function deleteTodoCat(todo){
-    todo.category ? unlinkCategory(todo.category._id, todo._id) : console.log("Nothing here");
+  function deleteTodoCat(todo) {
+    todo.category
+      ? unlinkCategory(todo.category._id, todo._id)
+      : console.log("Nothing here");
     deleteTodo(todo._id);
   }
+
+  const handleTitleClick = () => {
+    setIsTitleEditable(true);
+  };
+
   return (
     <>
-      <div className="px-5 py-5">
-        <div className="text-red-600 max-w border border-gray-400 rounded-md bg-green-300">
-          <div className="p-2 flex justify-between overflow-hidden">
+      <div className="max-w-screen-md mx-auto p-8">
+        <div className="max-w-md py-6 px-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <div className="flex-none">
-              <p className="text-gray-700 text-sm left-0">{createdAt}</p>
+              {/* <p className="text-gray-700 text-sm left-0">{createdAt}</p> */}
             </div>
-            <div className="flex flex-end">
-              {showCategoriesList && (
-                <div className="flex-none">
-                  <select
-                    className="rounded-full px-2 w-full"
-                    onChange={(e) => updateCategories(e.target.value)}
-                  >
-                    <option value="">Choose</option>
-                    {getTodoCategories.map((categories) => (
-                      <option value={categories._id} key={categories._id}>
-                        {categories.name}
-                      </option>
-                    ))}
-                  </select>
+            <div className="grid grid-cols-10">
+              <div className="col-start-1 col-end-6">
+                {todo?.category && (
+                  <div className="flex items-center mb-3">
+                    <span className=" flex-col items-center bg-gray-300 rounded-xl px-3 py-2 mr-2 group">
+                      {todo?.category?.name}
+                    </span>
+                    <Unlink
+                      onClick={() => deleteCategory(todo?.category?._id)}
+                      className="transition-transform transform hover:scale-110 hover:text-red-400 cursor-pointer"
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="col-start-8 col-end-9">
+                <div className="cols-span-5">
+                  {showCategoriesList && (
+                    <div className="cols-span-5">
+                      <select
+                        className="rounded-full px-2 w-full"
+                        onChange={(e) => updateCategories(e.target.value)}
+                      >
+                        <option value="">Choose</option>
+                        {getTodoCategories.map((categories) => (
+                          <option value={categories._id} key={categories._id}>
+                            {categories.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              <div className="ml-2 cursor-pointer" onClick={showCategories}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
+                <div
+                  className="ml-2 cursor-pointer "
+                  onClick={showCategories}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 6h.008v.008H6V6Z"
-                  />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-green-500"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 6h.008v.008H6V6Z"
+                    />
+                  </svg>
+                </div>
               </div>
               <div
                 className="ml-2 cursor-pointer"
                 // onClick={() => deleteTodo(todo._id)}
-                onClick={()=>deleteTodoCat(todo)}
+                onClick={() => deleteTodoCat(todo)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +217,7 @@ function TodoSingle({ todo }) {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-red-500"
                 >
                   <path
                     strokeLinecap="round"
@@ -203,44 +227,46 @@ function TodoSingle({ todo }) {
                 </svg>
               </div>
             </div>
-          </div>
-          {todo?.category && (
-            <div className="flex items-center">
-              <span className="relative inline-block bg-red-300 rounded-full px-2 py-1 mr-5 group">
-                {todo?.category?.name}
-                <div
-                  className="opacity-0 group-hover:opacity-100 absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-5 cursor-pointer"
-                  onClick={() => deleteCategory(todo?.category?._id)}
-               
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    {/* Your SVG code for the cross icon */}
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                    <line x1="6" y1="18" x2="18" y2="6" />
-                  </svg>
-                </div>
-              </span>
-            </div>
-          )}
 
-          <div className="px-6 py-4 ">
-            <div className="flex flex-wrap justify-center">
-              {isTitleEditable ? (
-                <div className="flex flex-wrap">
-                  <input
-                    type="text"
-                    value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
-                    className="border-b-2 focus:outline-none focus:border-green-500"
-                  />
-                  <div className="ml-2" onClick={handleTitleUpdate}>
+
+          <div className="flex items-center px-6">
+            {!editedCompleted && isTitleEditable ? (
+              <div className="flex items-center ">
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white cursor-text underline"
+                />
+                <Check
+                  onClick={handleTitleUpdate}
+                  className="ml-2 cursor-pointer"
+                />
+              </div>
+            ) : (
+              <h5
+                className={`mb-2 ${editedCompleted ? "line-through" : ""} text-2xl font-semibold tracking-tight text-gray-900 dark:text-white cursor-pointer`}
+                onClick={handleTitleClick}
+              >
+                {editedTitle}
+              </h5>
+            )}
+          </div>
+          {/* Description Section */}
+          <div className="flex items-center px-6">
+            {!editedCompleted && isDescEditable ? (
+              <div className="flex items-center ">
+                <textarea
+                  type="text"
+                  value={editedDesc}
+                  onChange={(e) => setEditedDesc(e.target.value)}
+                  className="mb-3 font-normal text-gray-500 dark:text-gray-400 cursor-text underline"
+                />
+                {!editedCompleted && isDescEditable && (
+                  <div
+                    className="ml-2 cursor-pointer"
+                    onClick={handleDescUpdate}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -256,56 +282,27 @@ function TodoSingle({ todo }) {
                       />
                     </svg>
                   </div>
-                </div>
-              ) : (
-                <div onClick={handleEditTitle}>
-                  {" "}
-                  <h3 className="font-bold text-red-500 text-center text-xl">
-                    {title}
-                  </h3>{" "}
-                </div>
-              )}
-            </div>
-            <div className="flex flex-wrap justify-center">
-              {isDescEditable ? (
-                <div className="flex flex-wrap">
-                  <textarea
-                    type="text"
-                    value={editedDesc}
-                    onChange={(e) => setEditedDesc(e.target.value)}
-                    className="border-b-2 focus:outline-none focus:border-green-500"
-                  />
-                  <div className="ml-2" onClick={handleDescUpdate}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m4.5 12.75 6 6 9-13.5"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              ) : (
-                <div onClick={handleEditDesc}>
-                  <p className="text-gray-600 text-lg text-base px-7 py-5">
-                    {description}
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center space-x-10">
-              <button onClick={handleCompletedUpdate}>
-                {editedCompleted ? "done already" : "done"}
-              </button>
-              {/* <button onClick={onEdit}>{isEditable ? "done" : "edit"}</button> */}
-            </div>
+                )}
+              </div>
+            ) : (
+              <article className="text-wrap overflow-hidden">
+                <p
+                  className={`mb-3  ${editedCompleted ? "line-through" : ""} font-normal text-gray-500 dark:text-gray-400 cursor-pointer`}
+                  onClick={handleEditDesc}
+                >
+                  {editedDesc}
+                </p>
+              </article>
+            )}
+          </div>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              className="rounded-full bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              onClick={handleCompletedUpdate}
+            >
+              {editedCompleted ? "Restart" : "Completed"}
+            </button>
           </div>
         </div>
       </div>

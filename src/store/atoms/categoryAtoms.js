@@ -11,3 +11,8 @@ export const categoryAtomFamily = atomFamily({
         }
     })
 })
+
+export const showAddCatModalAtom = atom({
+    key: 'showAddCatModalAtom',
+    default: false
+  })
