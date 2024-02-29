@@ -1,20 +1,24 @@
 import { useState } from "react";
-import axios from 'axios';
 import { useSetRecoilState } from "recoil";
 import { categoryAtomFamily, showAddCatModalAtom } from "../store/atoms/categoryAtoms";
+import { createCategory } from "../api/categoryApi";
+import { showSpinner } from "../store/atoms/todoAtoms";
 function AddCategory(){
 const [ catName, setCatName ] = useState('')
 const setCategories = useSetRecoilState(categoryAtomFamily());
 const setShowCatModal = useSetRecoilState(showAddCatModalAtom);
-    const createCategory=async(e)=>{
+const setSpinner = useSetRecoilState(showSpinner)
+    const createThisCategory=async(e)=>{
+      setSpinner(true)
         e.preventDefault();
         const category = {
             name: catName
         }
-        const cat = await axios.post('http://192.168.29.216:3000/api/v1/category/createCategory', category);
-        setCategories((prevCats)=>[...prevCats, cat.data.category]);
-        console.log(cat.data.category)
+        const cat = await createCategory(category)
+        console.log("after create cat: ",cat);
+        setCategories((prevCats)=>[...prevCats, cat.category]);
         setShowCatModal(false);
+        setSpinner(false)
     }
 
 return <>
@@ -80,7 +84,7 @@ return <>
                 </div>
                 <button
                   type="submit"
-                  onClick={createCategory}
+                  onClick={createThisCategory}
                   className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   <svg

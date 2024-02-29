@@ -1,16 +1,19 @@
 import { useState } from "react";
-import axios from "axios";
+import { showSpinner } from "../store/atoms/todoAtoms";
 import { useSetRecoilState } from "recoil";
 import {
   showAddTodoModalAtom,
   todosAtomFamily,
 } from "../store/atoms/todoAtoms";
+import { createTodo } from '../api/todoApi'
 function CreateTodo() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const setTodos = useSetRecoilState(todosAtomFamily());
+  const setSpinner = useSetRecoilState(showSpinner)
   const setShowTodoModal = useSetRecoilState(showAddTodoModalAtom);
   const handleCreateTodo = async (e) => {
+    setSpinner(true);
     e.preventDefault();
     const newTodo = {
       title: title,
@@ -19,12 +22,10 @@ function CreateTodo() {
       createdAt: new Date().toLocaleString(),
       dueAt: new Date().toLocaleString(),
     };
-    const res = await axios.post(
-      "http://192.168.29.216:3000/api/v1/createTodo",
-      newTodo
-    );
-    setTodos((previousTodos) => [...previousTodos, res.data.todo]);
+    const res = await createTodo(newTodo);
+    setTodos((previousTodos) => [...previousTodos, res.todo]);
     setShowTodoModal(false);
+    setSpinner(false);
   };
   return (
     <>

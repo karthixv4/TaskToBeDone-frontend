@@ -1,10 +1,16 @@
 import TodoSingle from "./TodoSingle";
-import { todosAtomFamily, filteredAtomsByCat, showAddTodoModalAtom } from "../store/atoms/todoAtoms";
+import {
+  todosAtomFamily,
+  filteredAtomsByCat,
+  showAddTodoModalAtom,
+} from "../store/atoms/todoAtoms";
 import { useRecoilValue } from "recoil";
 import Category from "./Category";
 import CreateTodo from "./CreateTodo";
 import { showAddCatModalAtom } from "../store/atoms/categoryAtoms";
 import AddCategory from "./AddCategory";
+import { Suspense } from "react";
+import Spinner from "./Spinner";
 
 function AllTodos() {
   // const allTodos = useRecoilValue(todosAtomFamily());
@@ -15,29 +21,35 @@ function AllTodos() {
 
   return (
     <>
-<div className="flex flex-col relative w-full">
-  <Category />
-  <div id="todoContents" className="flex h-full">
-    {/* Create a separate container for grid */}
-    <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
-      {allTodos.map((todo) => (
-        <div className="" key={todo._id}>
-          <TodoSingle key={todo._id} todo={todo} />
+      <div className="flex flex-col relative w-full">
+        <Suspense fallback={<Spinner />}>
+          <Category />
+        </Suspense>
+        <div id="todoContents" className="flex h-full">
+          {/* Create a separate container for grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
+            {allTodos.map((todo) => (
+              <div className="" key={todo.id}>
+                <Suspense fallback={<Spinner />}>
+                  <TodoSingle key={todo.id} todo={todo} />
+                </Suspense>
+              </div>
+            ))}
+          </div>
+
+          {/* Position createModal absolutely over the grid container */}
+          <div
+            id="createModal"
+            className="absolute left-0 right-0 z-10 flex items-center justify-center"
+          >
+            {/* Center content within createModal using flexbox */}
+            <div className="flex flex-col items-center">
+              {showAddTodoModal && <CreateTodo />}
+              {showAddCatModal && <AddCategory />}
+            </div>
+          </div>
         </div>
-      ))}
-    </div>
-
-    {/* Position createModal absolutely over the grid container */}
-    <div id="createModal" className="absolute left-0 right-0 z-10 flex items-center justify-center">
-      {/* Center content within createModal using flexbox */}
-      <div className="flex flex-col items-center">
-        {showAddTodoModal && <CreateTodo />}
-        {showAddCatModal && <AddCategory />}
       </div>
-    </div>
-  </div>
-</div>
-
     </>
   );
 }

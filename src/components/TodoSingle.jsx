@@ -1,13 +1,14 @@
-import React, { useState, useRef } from "react";
-import axios from "axios";
-import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useState } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { todosAtomFamily } from "../store/atoms/todoAtoms";
 import { categoryAtomFamily } from "../store/atoms/categoryAtoms";
-import { Unlink, Check } from "lucide-react";
+import { deleteTodo, updateTodo } from '../api/todoApi';
+import { Unlink, Check } from 'lucide-react';
+import { showSpinner } from "../store/atoms/todoAtoms";
 function TodoSingle({ todo }) {
   //useState Stuffs
   const { title, description, isCompleted, createdAt } = todo;
-
+  const setSpinner = useSetRecoilState(showSpinner)
   //for title field
   const [isTitleEditable, setIsTitleEditable] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
@@ -28,36 +29,26 @@ function TodoSingle({ todo }) {
   );
   // console.log("tdodo: ",todo)
 
-  async function deleteTodo(id) {
-    await axios.delete(`http://192.168.29.216:3000/api/v1/deleteTodo?id=${id}`);
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
+  async function deleteThisTodo(id) {
+    setSpinner(true)
+    await deleteTodo(id);
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    setSpinner(false)
   }
 
-  async function updateTodo(toUpdateTodo) {
-    const res = await axios.put(
-      "http://192.168.29.216:3000/api/v1/updateTodo",
-      toUpdateTodo
-    );
-    console.log("Res from todo api: ", res.data);
+  async function updateThisTodo(toUpdateTodo) {
+    setSpinner(true)
+    const res = await updateTodo(toUpdateTodo)
+    console.log("Res from todo api: ", res);
     setTodos((prevTodos) =>
       prevTodos.map((singleTodo) =>
-        singleTodo._id === res.data.todo._id ? res.data.todo : singleTodo
+        singleTodo.id === res.updatedTodo.id ? res.updatedTodo : singleTodo
       )
     );
+    setSpinner(false)
   }
 
-  async function linkCategory(categoryId, todoId) {
-    const res = await axios.put(
-      `http://192.168.29.216:3000/api/v1/category/linkTodo?catId=${categoryId}&todoId=${todoId}`
-    );
-    console.log("Res from link cat api: ", res.data.category);
-    setTodoCategories((prevCat) =>
-      prevCat.map((singleCat) =>
-        singleCat._id === res.data.category._id ? res.data.category : singleCat
-      )
-    );
-    return res.data.category;
-  }
+
   async function unlinkCategory(categoryId, todoId) {
     const res = await axios.put(
       `http://192.168.29.216:3000/api/v1/category/unlinkTodo?catId=${categoryId}&todoId=${todoId}`
@@ -65,7 +56,7 @@ function TodoSingle({ todo }) {
     console.log("Res from unlink cat api: ", res.data.category);
     setTodoCategories((prevCat) =>
       prevCat.map((singleCat) =>
-        singleCat._id === res.data.category._id ? res.data.category : singleCat
+        singleCat.id === res.data.category.id ? res.data.category : singleCat
       )
     );
   }
@@ -81,7 +72,7 @@ function TodoSingle({ todo }) {
       createdAt: new Date().toLocaleString(),
       title: editedTitle,
     };
-    updateTodo(newTodo);
+    updateThisTodo(newTodo);
     setIsTitleEditable(false);
   };
 
@@ -91,7 +82,7 @@ function TodoSingle({ todo }) {
       createdAt: new Date().toLocaleString(),
       description: editedDesc,
     };
-    updateTodo(newTodo);
+    updateThisTodo(newTodo);
     setIsDescEditable(false);
   };
 
@@ -103,7 +94,7 @@ function TodoSingle({ todo }) {
       isCompleted: !editedCompleted,
     };
 
-    updateTodo(newTodo);
+    updateThisTodo(newTodo);
   };
 
   function showCategories() {
@@ -112,30 +103,29 @@ function TodoSingle({ todo }) {
       : setShowCategoriesList(true);
   }
 
-  async function updateCategories(value) {
-    const cat = await linkCategory(value, todo._id);
+  async function updateCategories(value){
     showCategories();
     const newTodo = {
       ...todo,
-      category: cat,
+      categoryId: parseInt(value,10),
     };
-    updateTodo(newTodo);
+    updateThisTodo(newTodo);
   }
 
-  function deleteCategory(catId) {
-    unlinkCategory(catId, todo._id);
+  function unlinkThisCategory(catId) {
     const newTodo = {
       ...todo,
       category: null,
+      categoryId: null
     };
-    updateTodo(newTodo);
+    updateThisTodo(newTodo);
   }
 
   function deleteTodoCat(todo) {
     todo.category
-      ? unlinkCategory(todo.category._id, todo._id)
+      ? unlinkCategory(todo.category.id, todo.id)
       : console.log("Nothing here");
-    deleteTodo(todo._id);
+    deleteThisTodo(todo.id);
   }
 
   const handleTitleClick = () => {
@@ -157,7 +147,7 @@ function TodoSingle({ todo }) {
                       {todo?.category?.name}
                     </span>
                     <Unlink
-                      onClick={() => deleteCategory(todo?.category?._id)}
+                      onClick={() => unlinkThisCategory(todo?.category?.id)}
                       className="transition-transform transform hover:scale-110 hover:text-red-400 cursor-pointer"
                     />
                   </div>
@@ -173,7 +163,7 @@ function TodoSingle({ todo }) {
                       >
                         <option value="">Choose</option>
                         {getTodoCategories.map((categories) => (
-                          <option value={categories._id} key={categories._id}>
+                          <option value={categories.id} key={categories.id}>
                             {categories.name}
                           </option>
                         ))}

@@ -1,12 +1,12 @@
 import { atomFamily, selector, selectorFamily,atom } from "recoil";
-import axios from 'axios';
+import { getAllTodos } from '../../api/todoApi'
 export const todosAtomFamily = atomFamily({
     key: "todosAtomFamily",
     default: selectorFamily({
         key: "todosSelectorFamily",
         get: ()=> async()=>{
-          const res = await axios.get("http://192.168.29.216:3000/api/v1/allTodos");
-          return res.data.todos;
+          const res = await getAllTodos();
+          return res.todos;
         }
     })
 })
@@ -15,7 +15,7 @@ export const selectedCatAtom = atom({
   key: 'selectedAtom',
   default: ({
       cat: 'AllTodos',
-      _id: 'allTodos'
+      id: 'allTodos'
   })
 })
 
@@ -25,15 +25,20 @@ export const filteredAtomsByCat = selector({
     const cat = get(selectedCatAtom);
     const todos = get(todosAtomFamily());
 
-    if(cat._id === 'allTodos'){
+    if(cat.id === 'allTodos'){
       return todos;
     } else {
-     return todos.filter((todo)=> todo?.category?._id === cat._id);
+     return todos.filter((todo)=> todo?.category?.id === cat.id);
     }
   }
 })
 
 export const showAddTodoModalAtom = atom({
   key: 'showAddTodoModalAtom',
+  default: false
+})
+
+export const showSpinner = atom({
+  key: 'showSpinner',
   default: false
 })
