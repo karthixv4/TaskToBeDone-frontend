@@ -24,12 +24,7 @@ const setSpinner = useSetRecoilState(showSpinner)
 return <>
 <div className="flex items-center justify-center h-screen">
         {/* Main modal */}
-        <div
-          id="crud-modal"
-          tabIndex="-1"
-          aria-hidden="true"
-          className="overflow-y-auto overflow-x-hidden z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
-        >
+        <div id="crud-modal" tabIndex="-1" aria-hidden="true" className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-900 bg-opacity-50">
           <div className="relative p-4 w-full max-w-xl max-h-full">
             {/* Modal content */}
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">

@@ -14,7 +14,7 @@ export const todosAtomFamily = atomFamily({
 export const selectedCatAtom = atom({
   key: 'selectedAtom',
   default: ({
-      cat: 'AllTodos',
+      cat: 'All',
       id: 'allTodos'
   })
 })

@@ -33,7 +33,7 @@ function Sidebar() {
   return (
     <>
       {/* //for desktop side bar */}
-      <aside className="hidden relative md:flex h-screen w-64 flex-col overflow-y-auto border-r bg-white px-5 py-8">
+      <aside className="hidden relative md:flex h-screen w-64 flex-col overflow-y-auto border-r bg-white px-5 py-8 fixed left-0 top-0">
         <a href="#">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { todosAtomFamily } from "../store/atoms/todoAtoms";
 import { categoryAtomFamily } from "../store/atoms/categoryAtoms";
-import { deleteTodo, updateTodo } from '../api/todoApi';
-import { Unlink, Check } from 'lucide-react';
+import { deleteTodo, updateTodo } from "../api/todoApi";
+import { Unlink, Check } from "lucide-react";
 import { showSpinner } from "../store/atoms/todoAtoms";
 function TodoSingle({ todo }) {
   //useState Stuffs
   const { title, description, isCompleted, createdAt } = todo;
-  const setSpinner = useSetRecoilState(showSpinner)
+  const setSpinner = useSetRecoilState(showSpinner);
   //for title field
   const [isTitleEditable, setIsTitleEditable] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
@@ -30,24 +30,23 @@ function TodoSingle({ todo }) {
   // console.log("tdodo: ",todo)
 
   async function deleteThisTodo(id) {
-    setSpinner(true)
+    setSpinner(true);
     await deleteTodo(id);
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
-    setSpinner(false)
+    setSpinner(false);
   }
 
   async function updateThisTodo(toUpdateTodo) {
-    setSpinner(true)
-    const res = await updateTodo(toUpdateTodo)
+    setSpinner(true);
+    const res = await updateTodo(toUpdateTodo);
     console.log("Res from todo api: ", res);
     setTodos((prevTodos) =>
       prevTodos.map((singleTodo) =>
         singleTodo.id === res.updatedTodo.id ? res.updatedTodo : singleTodo
       )
     );
-    setSpinner(false)
+    setSpinner(false);
   }
-
 
   async function unlinkCategory(categoryId, todoId) {
     const res = await axios.put(
@@ -60,7 +59,6 @@ function TodoSingle({ todo }) {
       )
     );
   }
-
 
   const handleEditDesc = () => {
     setIsDescEditable(true);
@@ -103,11 +101,11 @@ function TodoSingle({ todo }) {
       : setShowCategoriesList(true);
   }
 
-  async function updateCategories(value){
+  async function updateCategories(value) {
     showCategories();
     const newTodo = {
       ...todo,
-      categoryId: parseInt(value,10),
+      categoryId: parseInt(value, 10),
     };
     updateThisTodo(newTodo);
   }
@@ -116,7 +114,7 @@ function TodoSingle({ todo }) {
     const newTodo = {
       ...todo,
       category: null,
-      categoryId: null
+      categoryId: null,
     };
     updateThisTodo(newTodo);
   }
@@ -134,90 +132,101 @@ function TodoSingle({ todo }) {
 
   return (
     <>
-      <div className="max-w-screen-md mx-auto p-8">
+      <div className="max-w-screen-md mx-auto py-4 px-8">
         <div className="max-w-md py-6 px-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <div className="flex-none">
-              {/* <p className="text-gray-700 text-sm left-0">{createdAt}</p> */}
+          <div className="flex-none">
+            {/* <p className="text-gray-700 text-sm left-0">{createdAt}</p> */}
+          </div>
+          <div className="grid grid-cols-10">
+            <div className="col-start-1 col-end-6">
+              {todo?.category && (
+                <div className="flex items-center mb-3">
+                  <span className=" flex-col items-center bg-gray-300 rounded-xl px-3 py-2 mr-2 group">
+                    {todo?.category?.name}
+                  </span>
+                  <Unlink
+                    onClick={() => unlinkThisCategory(todo?.category?.id)}
+                    className="transition-transform transform hover:scale-110 hover:text-red-400 cursor-pointer"
+                  />
+                </div>
+              )}
             </div>
-            <div className="grid grid-cols-10">
-              <div className="col-start-1 col-end-6">
-                {todo?.category && (
-                  <div className="flex items-center mb-3">
-                    <span className=" flex-col items-center bg-gray-300 rounded-xl px-3 py-2 mr-2 group">
-                      {todo?.category?.name}
-                    </span>
-                    <Unlink
-                      onClick={() => unlinkThisCategory(todo?.category?.id)}
-                      className="transition-transform transform hover:scale-110 hover:text-red-400 cursor-pointer"
-                    />
+            <div className="col-start-8 col-end-9">
+              <div className="col-span-5">
+                {showCategoriesList && (
+                  <div className="col-span-8">
+                    {/* <select
+                      className="rounded-full px-2 w-full min-w-1/2 appearance-none bg-transparent border-none focus:outline-none"
+                      onChange={(e) => updateCategories(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Choose
+                      </option>
+                      {getTodoCategories.map((categories) => (
+                        <option value={categories.id} key={categories.id}>
+                          {categories.name}
+                        </option>
+                      ))}
+                    </select> */}
+                    <select
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      onChange={(e) => updateCategories(e.target.value)}
+                    >
+                      <option selected>Choose a category</option>
+                      {getTodoCategories.map((categories) => (
+                        <option value={categories.id} key={categories.id}>
+                          {categories.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
               </div>
-              <div className="col-start-8 col-end-9">
-                <div className="cols-span-5">
-                  {showCategoriesList && (
-                    <div className="cols-span-5">
-                      <select
-                        className="rounded-full px-2 w-full"
-                        onChange={(e) => updateCategories(e.target.value)}
-                      >
-                        <option value="">Choose</option>
-                        {getTodoCategories.map((categories) => (
-                          <option value={categories.id} key={categories.id}>
-                            {categories.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
-                <div
-                  className="ml-2 cursor-pointer "
-                  onClick={showCategories}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-green-500"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 6h.008v.008H6V6Z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div
-                className="ml-2 cursor-pointer"
-                // onClick={() => deleteTodo(todo._id)}
-                onClick={() => deleteTodoCat(todo)}
-              >
-                <svg
+
+              <div className="ml-2 cursor-pointer " onClick={showCategories}>
+                {<svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-red-500"
+                  className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-green-500"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+                    d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"
                   />
-                </svg>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 6h.008v.008H6V6Z"
+                  />
+                </svg>}
+                
               </div>
             </div>
-
+            <div
+              className="ml-2 cursor-pointer"
+              // onClick={() => deleteTodo(todo._id)}
+              onClick={() => deleteTodoCat(todo)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-red-500"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+                />
+              </svg>
+            </div>
+          </div>
 
           <div className="flex items-center px-6">
             {!editedCompleted && isTitleEditable ? (
@@ -235,7 +244,9 @@ function TodoSingle({ todo }) {
               </div>
             ) : (
               <h5
-                className={`mb-2 ${editedCompleted ? "line-through" : ""} text-2xl font-semibold tracking-tight text-gray-900 dark:text-white cursor-pointer`}
+                className={`mb-2 ${
+                  editedCompleted ? "line-through" : ""
+                } text-2xl font-semibold tracking-tight text-gray-900 dark:text-white cursor-pointer`}
                 onClick={handleTitleClick}
               >
                 {editedTitle}
@@ -277,7 +288,9 @@ function TodoSingle({ todo }) {
             ) : (
               <article className="text-wrap overflow-hidden">
                 <p
-                  className={`mb-3  ${editedCompleted ? "line-through" : ""} font-normal text-gray-500 dark:text-gray-400 cursor-pointer`}
+                  className={`mb-3  ${
+                    editedCompleted ? "line-through" : ""
+                  } font-normal text-gray-500 dark:text-gray-400 cursor-pointer`}
                   onClick={handleEditDesc}
                 >
                   {editedDesc}

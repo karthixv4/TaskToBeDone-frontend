@@ -6,11 +6,13 @@ import {
 } from "../store/atoms/todoAtoms";
 import { deleteCategory } from "../api/categoryApi";
 import { showSpinner } from '../store/atoms/todoAtoms'
+import {useEffect} from "react";
 function Category() {
   const [getCategories, setCategories] = useRecoilState(categoryAtomFamily());
   const [selectedCat, setSelectedCat] = useRecoilState(selectedCatAtom);
   const setTodos = useSetRecoilState(todosAtomFamily());
   const setSpinner = useSetRecoilState(showSpinner)
+
   async function deleteCategories(cat) {
     setSpinner(true);
     const res = await deleteCategory(cat.id);
@@ -31,12 +33,12 @@ function Category() {
   }
   return (
     <>
-      <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 w-full">
+      <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 w-full mx-5 mr-20">
         <ul className="flex justify-start space-x-5 overflow-x-auto">
           <li className="flex flex-row items-center cursor-pointer">
             <h1
               onClick={() =>
-                setSelectedCat({ cat: "AllTodos", id: "allTodos" })
+                setSelectedCat({ cat: "All", id: "allTodos" })
               }
               className={`inline-block py-5 px-1 ${
                 selectedCat.id === "allTodos"
@@ -87,6 +89,7 @@ function Category() {
               </li>
             </div>
           ))}
+
         </ul>
       </div>
     </>
