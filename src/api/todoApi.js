@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 const api = axios.create({
     baseURL: "https://todo-backend.vigneshkarthink.workers.dev",
@@ -10,7 +11,12 @@ const api = axios.create({
 
 export const getAllTodos = async()=>{
 try{
-    const response = await api.get('/api/v1/todo/all')
+    const token = Cookies.get('todoToken')
+    const response = await api.get('/api/v1/todo/all', {
+        headers:{
+            'Auth':token
+        }
+    })
     return response.data;
 }catch(error){
     console.error('Error fetching data:', error);
@@ -20,7 +26,12 @@ try{
 
 export const createTodo = async(todo)=>{
     try{
-        const response = await api.post('/api/v1/todo/createTodo', todo)
+        const token = Cookies.get('todoToken')
+        const response = await api.post('/api/v1/todo/createTodo', todo, {
+            headers:{
+                'Auth':token
+            }
+        })
         return response.data;
     }catch(error){
         console.error('Error posting data:', error);
@@ -30,9 +41,11 @@ export const createTodo = async(todo)=>{
 
 export const deleteTodo = async(id)=>{
     try{
+        const token = Cookies.get('todoToken')
         const response = await api.delete('/api/v1/todo/delete',{
             headers: {
-                'todoId': id
+                'todoId': id,
+                'Auth':token
             }
         })
         return response.data;
@@ -44,7 +57,12 @@ export const deleteTodo = async(id)=>{
 
 export const updateTodo = async(todo)=>{
     try{
-        const response = await api.put('/api/v1/todo/updateTodo', todo)
+        const token = Cookies.get('todoToken')
+        const response = await api.put('/api/v1/todo/updateTodo', todo, {
+            headers:{
+                'Auth':token
+            }
+        })
         return response.data;
     }catch(error){
         console.error('Error posting data:', error);

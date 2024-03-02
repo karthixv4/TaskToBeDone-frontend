@@ -21,7 +21,7 @@ function AllTodos() {
 
   return (
     <>
-      <div className="flex flex-col relative w-full">
+      <div className="flex flex-col w-full">
         <div className="fixed top-0 w-full z-10 bg-white shadow-md">
           {" "}
           {/* Fixed position for Category */}

@@ -1,55 +1,138 @@
-import {
-  BookCheck,
-  Newspaper,
-  ListTodo,
-  BellRing,
-  Paperclip,
-  Brush,
-  Wrench,
-  Home,
-  Bookmark,
-  Users,
-  Settings,
-} from "lucide-react";
 import { useState } from "react";
-import AddCategory from "./AddCategory";
-import { useRecoilState } from "recoil";
+import { BookCheck, ListTodo, LogOut } from "lucide-react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { showAddTodoModalAtom } from "../store/atoms/todoAtoms";
 import { showAddCatModalAtom } from "../store/atoms/categoryAtoms";
+import { logoutAlert } from "../store/atoms/userAtoms";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 function Sidebar() {
   //states for modal todo/cat
-
-  const [ showModal, setShowModal ]  = useRecoilState(showAddTodoModalAtom)
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useRecoilState(showAddTodoModalAtom);
   const [showCatModal, setShowCatModal] = useRecoilState(showAddCatModalAtom);
+  const [showlogoutModal, setShowLogoutModal] = useState(false);
+  const logOutAlert = useSetRecoilState(logoutAlert);
+  function logout() {
+    Cookies.remove("todoToken");
+    logOutAlert(true);
+    navigate("/signin");
+  }
+
   //fn for modal show todo/cat
   function onClickModal() {
     showModal ? setShowModal(false) : setShowModal(true);
-    console.log(showModal)
+    console.log(showModal);
   }
 
   function onClickCatModal() {
     showCatModal ? setShowCatModal(false) : setShowCatModal(true);
   }
+
+  const toggleModal = () => {
+    console.log("clicked");
+    setShowLogoutModal(true);
+  };
+
+  const hideModal = () => {
+    setShowLogoutModal(false);
+  };
+   function LogoutPopup() {
+    return (
+      <>
+        {showlogoutModal && (
+          <div
+            id="popup-modal"
+            tabIndex="-1"
+            className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-gray-900 bg-opacity-50"
+          >
+            {console.log("I'm rendering ")}
+            <div className="relative p-4 w-full max-w-md max-h-full">
+              <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <button
+                  type="button"
+                  onClick={hideModal}
+                  className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                >
+                  <svg
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                  <span className="sr-only">Close modal</span>
+                </button>
+                <div className="p-4 md:p-5 text-center">
+                  <svg
+                    className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                  <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                    Are you sure you want to delete this product?
+                  </h3>
+                  <button
+                    onClick={logout}
+                    type="button"
+                    className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+                  >
+                    Yes, I'm sure
+                  </button>
+                  <button
+                    onClick={hideModal}
+                    type="button"
+                    className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-dark:border-gray-dark:hover:text-white dark:hover:bg-gray-dark"
+                  >
+                    No, cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
   return (
     <>
+    <LogoutPopup />
       {/* //for desktop side bar */}
       <aside className="hidden relative md:flex h-screen w-64 flex-col overflow-y-auto border-r bg-white px-5 py-8 fixed left-0 top-0">
         <a href="#">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="46"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-check-circle"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <path d="m9 11 3 3L22 4" />
-            </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="46"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-check-circle"
+          >
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <path d="m9 11 3 3L22 4" />
+          </svg>
         </a>
         <div className="mt-6 flex flex-1 flex-col justify-between">
           <nav className="-mx-3 space-y-6 ">
@@ -59,14 +142,35 @@ function Sidebar() {
               </label>
               <div onClick={onClickModal}>
                 <a className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700">
-                  <ListTodo className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer" aria-hidden="true" />
-                  <span className="mx-2 text-sm font-medium cursor-pointer">Add Todo</span>
+                  <ListTodo
+                    className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer"
+                    aria-hidden="true"
+                  />
+                  <span className="mx-2 text-sm font-medium cursor-pointer">
+                    Add Todo
+                  </span>
                 </a>
               </div>
               <div onClick={onClickCatModal}>
                 <a className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors -duration-300 hover:bg-gray-100 hover:text-gray-700">
-                  <BookCheck className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer" aria-hidden="true" />
-                  <span className="mx-2 text-sm font-medium cursor-pointer">Add Category</span>
+                  <BookCheck
+                    className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer"
+                    aria-hidden="true"
+                  />
+                  <span className="mx-2 text-sm font-medium cursor-pointer">
+                    Add Category
+                  </span>
+                </a>
+              </div>
+              <div onClick={toggleModal}>
+                <a className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors -duration-300 hover:bg-gray-100 hover:text-gray-700">
+                  <LogOut
+                    className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer"
+                    aria-hidden="true"
+                  />
+                  <span className="mx-2 text-sm font-medium cursor-pointer">
+                    Log out
+                  </span>
                 </a>
               </div>
             </div>
@@ -122,7 +226,7 @@ function Sidebar() {
       <aside className="md:hidden relative flex h-screen w-16 flex-col items-center overflow-y-auto border-r bg-white py-8 fixed">
         <nav className="flex flex-1 flex-col items-center space-y-6">
           <a href="#">
-          <svg
+            <svg
               xmlns="http://www.w3.org/2000/svg"
               width="40"
               height="46"
@@ -149,14 +253,30 @@ function Sidebar() {
             onClick={onClickModal}
             className="rounded-lg p-1.5 text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
           >
-            <ListTodo size={24} className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer" />
+            <ListTodo
+              size={24}
+              className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer"
+            />
           </a>
 
           <a
             onClick={onClickCatModal}
             className="rounded-lg p-1.5 text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
           >
-            <BookCheck size={24} className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer" />
+            <BookCheck
+              size={24}
+              className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer"
+            />
+          </a>
+
+          <a
+            onClick={toggleModal}
+            className="rounded-lg p-1.5 text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
+          >
+            <LogOut
+              size={24}
+              className="w-6 h-6 transition-transform transform hover:scale-110 hover:text-black-300 cursor-pointer"
+            />
           </a>
 
           {/* <a
@@ -191,7 +311,6 @@ function Sidebar() {
           </a> */}
         {/* </div> */}
       </aside>
-    
     </>
   );
 }
