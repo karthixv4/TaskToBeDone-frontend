@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { showSpinner } from "../store/atoms/todoAtoms";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import {
   showAddTodoModalAtom,
   todosAtomFamily,
+  selectedCatAtom
 } from "../store/atoms/todoAtoms";
 import { createTodo } from '../api/todoApi'
 function CreateTodo() {
@@ -12,6 +13,7 @@ function CreateTodo() {
   const setTodos = useSetRecoilState(todosAtomFamily());
   const setSpinner = useSetRecoilState(showSpinner)
   const setShowTodoModal = useSetRecoilState(showAddTodoModalAtom);
+  const currentCat = useRecoilValue(selectedCatAtom);
   const handleCreateTodo = async (e) => {
     setSpinner(true);
     e.preventDefault();
@@ -22,6 +24,9 @@ function CreateTodo() {
       createdAt: new Date().toLocaleString(),
       dueAt: new Date().toLocaleString(),
     };
+    if(currentCat.id !== 'allTodos'){
+      newTodo.categoryId = currentCat.id;
+    }
     const res = await createTodo(newTodo);
     setTodos((previousTodos) => [...previousTodos, res.todo]);
     setShowTodoModal(false);

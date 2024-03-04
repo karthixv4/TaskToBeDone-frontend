@@ -18,7 +18,6 @@ function App() {
     async function verifyJWT() {
       // const secret = new TextEncoder().encode("VICKY");
       const token = Cookies.get("todoToken");
-      console.log("TOKEN: ", token)
       if(!token){
         setFlag(false);
         navigate("/signin")

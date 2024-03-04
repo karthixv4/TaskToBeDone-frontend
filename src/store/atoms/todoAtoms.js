@@ -25,9 +25,9 @@ export const filteredAtomsByCat = selector({
     const cat = get(selectedCatAtom);
     const todos = get(todosAtomFamily());
 
-    if(cat.id === 'allTodos'){
+    if(todos && cat.id === 'allTodos'){
       return todos;
-    } else {
+    } else if(todos) {
      return todos.filter((todo)=> todo?.category?.id === cat.id);
     }
   }
