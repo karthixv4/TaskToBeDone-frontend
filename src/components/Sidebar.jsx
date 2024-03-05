@@ -45,10 +45,8 @@ function Sidebar() {
         {showlogoutModal && (
           <div
             id="popup-modal"
-            tabIndex="-1"
-            className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-gray-900 bg-opacity-50"
+            className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-gray-900 bg-opacity-50"
           >
-            {console.log("I'm rendering ")}
             <div className="relative p-4 w-full max-w-md max-h-full">
               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                 <button
@@ -90,7 +88,7 @@ function Sidebar() {
                     />
                   </svg>
                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this product?
+                    Are you sure you want to logout ?
                   </h3>
                   <button
                     onClick={logout}

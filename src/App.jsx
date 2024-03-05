@@ -31,7 +31,7 @@ function App() {
     return(
       <>
       {flag && <div className="flex flex-row">
-      <div className="fixed left-0 top-0 md:w-64 w-16">
+      <div className="fixed z-0 left-0 top-0 md:w-64 w-16">
         {" "}
         {/* Adjust width for mobile */}
         <Sidebar />

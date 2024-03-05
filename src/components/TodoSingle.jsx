@@ -4,7 +4,8 @@ import { todosAtomFamily } from "../store/atoms/todoAtoms";
 import { categoryAtomFamily } from "../store/atoms/categoryAtoms";
 import { deleteTodo, updateTodo } from "../api/todoApi";
 import { Unlink, Check } from "lucide-react";
-import { showSpinner } from "../store/atoms/todoAtoms";
+import { showSpinner, showTodoSpinner } from "../store/atoms/todoAtoms";
+import UpdateTodoSpinner from "./UpdateTodoSpinner";
 function TodoSingle({ todo }) {
   //useState Stuffs
   const { title, description, isCompleted, createdAt } = todo;
@@ -27,6 +28,13 @@ function TodoSingle({ todo }) {
   const [getTodoCategories, setTodoCategories] = useRecoilState(
     categoryAtomFamily()
   );
+  const setTodoSpinner = (todoId, value) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === todoId ? { ...todo, showTodoSpinner: value } : todo
+      )
+    );
+  };
   // console.log("tdodo: ",todo)
 
   async function deleteThisTodo(id) {
@@ -37,7 +45,7 @@ function TodoSingle({ todo }) {
   }
 
   async function updateThisTodo(toUpdateTodo) {
-    setSpinner(true);
+    setTodoSpinner(todo.id, true);
     const res = await updateTodo(toUpdateTodo);
     console.log("Res from todo api: ", res);
     setTodos((prevTodos) =>
@@ -45,23 +53,12 @@ function TodoSingle({ todo }) {
         singleTodo.id === res.updatedTodo.id ? res.updatedTodo : singleTodo
       )
     );
-    setSpinner(false);
+    setTodoSpinner(todo.id, false);
   }
 
-  async function unlinkCategory(categoryId, todoId) {
-    const res = await axios.put(
-      `http://192.168.29.216:3000/api/v1/category/unlinkTodo?catId=${categoryId}&todoId=${todoId}`
-    );
-    console.log("Res from unlink cat api: ", res.data.category);
-    setTodoCategories((prevCat) =>
-      prevCat.map((singleCat) =>
-        singleCat.id === res.data.category.id ? res.data.category : singleCat
-      )
-    );
-  }
 
   const handleEditDesc = () => {
-    setIsDescEditable(true);
+    setIsDescEditable(false);
   };
 
   const handleTitleUpdate = () => {
@@ -120,19 +117,19 @@ function TodoSingle({ todo }) {
   }
 
   function deleteTodoCat(todo) {
-    todo.category
-      ? unlinkCategory(todo.category.id, todo.id)
-      : console.log("Nothing here");
     deleteThisTodo(todo.id);
   }
 
   const handleTitleClick = () => {
-    setIsTitleEditable(true);
+    setIsTitleEditable(false);
   };
 
   return (
     <>
+
       <div className="max-w-screen-md mx-auto py-4 px-8">
+      <div className="flex justify-center">
+      <div className="relative">
         <div className="max-w-md py-6 px-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
           <div className="flex-none">
             {/* <p className="text-gray-700 text-sm left-0">{createdAt}</p> */}
@@ -308,6 +305,9 @@ function TodoSingle({ todo }) {
             </button>
           </div>
         </div>
+        <UpdateTodoSpinner todo={todo} />
+      </div>
+      </div>
       </div>
     </>
   );

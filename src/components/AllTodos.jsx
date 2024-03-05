@@ -22,7 +22,7 @@ function AllTodos() {
   return (
     <>
       <div className="flex flex-col w-full">
-        <div className="fixed top-0 w-full z-10 bg-white shadow-md">
+        <div className="fixed top-0 w-full z-0 bg-white shadow-md">
           {" "}
           {/* Fixed position for Category */}
           <Suspense fallback={<Spinner />}>
@@ -31,7 +31,7 @@ function AllTodos() {
         </div>
         <div id="todoContents" className="flex h-full">
           {/* Create a separate container for grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 mt-20 md:mt-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 mt-20 md:mt-16 z-0">
             {allTodos.map((todo) => (
               <div className="" key={todo.id}>
                 <Suspense fallback={<Spinner />}>
