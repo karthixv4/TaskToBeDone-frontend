@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
-import { signInUser } from "../api/userApi";
+import { signInUser, googleUserInfo } from "../api/userApi";
 import Cookies from "js-cookie";
 import { useNavigate, Link } from "react-router-dom";
 import { Alerts } from "./Alerts";
@@ -8,6 +8,7 @@ import { useSetRecoilState } from "recoil";
 import { signInErrorAlert } from "../store/atoms/userAtoms";
 import { jwtVerify } from "jose";
 import { showSpinner } from "../store/atoms/todoAtoms";
+import { useGoogleLogin } from '@react-oauth/google';
 export function Signin() {
   const navigate = useNavigate();
   const setSpinner = useSetRecoilState(showSpinner);
@@ -58,6 +59,26 @@ export function Signin() {
       setSpinner(false);
     }
   }
+
+  const getUserDetails = async(token)=>{
+    const response = await googleUserInfo(token);
+    if(response){
+      console.log("Response fom : ", response)
+      const user = {
+        name: response.name,
+        email: response.email,
+        password: response.id,
+      };
+      signin(user);
+    }
+  }
+
+  const loginGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => getUserDetails(codeResponse.access_token),
+    onError: (error) => console.log('Login Failed:', error)
+  });
+
+
   return (
     <section>
       <Alerts />
@@ -152,10 +173,11 @@ export function Signin() {
               </div>
             </div>
           </form>
-          {/* <div className="mt-3 space-y-3">
+          <div className="mt-3 space-y-3">
             <button
               type="button"
               className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
+              onClick={loginGoogle}
             >
               <span className="mr-2 inline-block">
                 <svg
@@ -169,7 +191,7 @@ export function Signin() {
               </span>
               Sign in with Google
             </button>
-            <button
+            {/* <button
               type="button"
               className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
             >
@@ -184,8 +206,8 @@ export function Signin() {
                 </svg>
               </span>
               Sign in with Facebook
-            </button>
-          </div> */}
+            </button> */}
+          </div>
         </div>
       </div>
     </section>

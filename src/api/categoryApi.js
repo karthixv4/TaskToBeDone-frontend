@@ -12,7 +12,6 @@ const api = axios.create({
 
 export const getAllCategories = async()=>{
 try{
-    console.log("ENV: ",process.env.BASE_URL )
     const token = Cookies.get('todoToken')
     const response = await api.get('/api/v1/category/all',{
         headers:{

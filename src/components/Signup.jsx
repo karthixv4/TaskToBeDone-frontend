@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import axios from "axios";
 import {
   signUpErrorAlert,
   userAtom,
   userExistsErrorAlert,
 } from "../store/atoms/userAtoms";
-import { signUpUser } from "../api/userApi";
+import { signUpUser, googleUserInfo } from "../api/userApi";
 import { useSetRecoilState } from "recoil";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Alerts } from "./Alerts";
 import { showSpinner } from "../store/atoms/todoAtoms";
 import { jwtVerify } from "jose";
+import { useGoogleLogin } from '@react-oauth/google';
 export function Signup() {
   const navigate = useNavigate();
   async function verifyJWT() {
@@ -34,6 +36,21 @@ export function Signup() {
   const [userEmail, setUserEmail] = useState("");
   const [userPass, setUserPass] = useState("");
   const setUser = useSetRecoilState(userAtom);
+
+  const getUserDetails = async(token)=>{
+    const response = await googleUserInfo(token);
+    if(response){
+      console.log("Response fom : ", response)
+      const user = {
+        name: response.name,
+        email: response.email,
+        password: response.id,
+      };
+      saveUser(user);
+    }
+  }
+
+
   function submitForm(e) {
     e.preventDefault();
     const user = {
@@ -50,12 +67,7 @@ export function Signup() {
       Cookies.remove("todoToken");
       const createdUser = await signUpUser(user);
       if (createdUser.user) {
-        setUser({
-          name: createdUser.user.name,
-          email: createdUser.user.email,
-        });
         Cookies.set("todoToken", createdUser.user.token);
-        console.log("Token from jsx: ",createdUser.user.token)
         navigate("/home");
       }
     } catch (e) {
@@ -71,6 +83,11 @@ export function Signup() {
       setSpinner(false);
     }
   }
+
+  const loginGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => getUserDetails(codeResponse.access_token),
+    onError: (error) => console.log('Login Failed:', error)
+});
   return (
     <section>
       <Alerts />
@@ -181,10 +198,11 @@ export function Signup() {
               </div>
             </div>
           </form>
-          {/* <div className="mt-3 space-y-3">
+          <div className="mt-3 space-y-3">
             <button
               type="button"
               className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
+              onClick={loginGoogle}
             >
               <span className="mr-2 inline-block">
                 <svg
@@ -198,7 +216,7 @@ export function Signup() {
               </span>
               Sign up with Google
             </button>
-            <button
+            {/* <button
               type="button"
               className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
             >
@@ -213,8 +231,8 @@ export function Signup() {
                 </svg>
               </span>
               Sign up with Facebook
-            </button>
-          </div> */}
+            </button> */}
+          </div>
         </div>
       </div>
     </section>

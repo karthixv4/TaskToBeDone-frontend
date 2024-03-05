@@ -6,6 +6,7 @@ import { showAddCatModalAtom } from "../store/atoms/categoryAtoms";
 import { logoutAlert } from "../store/atoms/userAtoms";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { googleLogout } from '@react-oauth/google';
 function Sidebar() {
   //states for modal todo/cat
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Sidebar() {
   const logOutAlert = useSetRecoilState(logoutAlert);
   function logout() {
     Cookies.remove("todoToken");
+    googleLogout();
     logOutAlert(true);
     navigate("/signin");
   }
